@@ -1,28 +1,15 @@
 local M = {}
 local utils = require "machinegun.utils"
 
-local get_os = function()
-  local operating_system = utils.run_terminal_cmd("uname -s", "Problem running `uname`")
-  if operating_system then
-    return string.lower(string.gsub(operating_system, "\n$", ""))
-  else
-    return false
-  end
-end
-
 M.get_machine_id = function()
-  local operating_system = get_os()
-  if not operating_system then
-    vim.notify("[Machinegun] Could not retrieve current OS", "ERROR")
-    return false
-  end
+  local operating_system = vim.loop.os_uname().sysname
 
   -- The purpose of the hash is to hide the actual machine ID in case the code
   -- ends up on Github or other place publicly available
   local id_cmd
-  if string.find(operating_system, "linux") then
+  if string.find(operating_system, "Linux") then
     id_cmd = [[cat /etc/machine-id | shasum -a 1 | cut -f 1 -d  " "]]
-  elseif string.find(operating_system, "darwin") then
+  elseif string.find(operating_system, "Darwin") then
     id_cmd =
       -- [[dscl /Search -read "/Users/$USER" GeneratedUID | cut -d ' ' -f2 | shasum -a 1 | cut -f 1 -d " "]]
       -- https://apple.stackexchange.com/questions/342042/how-can-i-query-the-hardware-uuid-of-a-mac-programmatically-from-a-command-line

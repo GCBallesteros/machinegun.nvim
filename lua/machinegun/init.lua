@@ -9,8 +9,6 @@ M.config = {
   settings = {},
 }
 
--- TODO: validate that the settings keys are in machines
-
 M.get_user = function()
   local user = utils.run_terminal_cmd("id -un", "Problem retrieving user name")
   if user then
