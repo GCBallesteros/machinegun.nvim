@@ -52,35 +52,35 @@ end
 --   return { user = user == "" and nil or user, machine = machine }
 -- end
 
+local make_settings = function(config)
+  local machine_name = M.get_machine_name()
+  local user = M.get_user()
+
+  -- Get the default config if there is one otherwise just assume it is empty
+  local final_config = config.settings[config.default]
+  if not final_config then
+    final_config = {}
+  end
+
+  -- Extend and overwrite the default with the machine (but not user) config
+  local machine_config = config.settings[machine_name]
+  if machine_config then
+    final_config = vim.tbl_deep_extend("force", final_config, config.settings[machine_name])
+  end
+
+  -- Extend and overwrite the machine config with the user@machine config
+  local user_machine_config = config.settings[user .. "@" .. machine_name]
+  if user_machine_config then
+    final_config = vim.tbl_deep_extend("force", final_config, user_machine_config)
+  end
+
+  return final_config
+end
+
 M.setup = function(config)
   vim.validate({ config = { config, "table", true } })
   M.config = vim.tbl_deep_extend("force", M.config, config or {})
-
-  local make_settings = function()
-    local machine_name = M.get_machine_name()
-    local user = M.get_user()
-
-    -- Get the default config if there is one otherwise just assume it is empty
-    local final_config = M.config.settings[M.default]
-    if not final_config then
-      final_config = {}
-    end
-
-    -- Extend and overwrite the default with the machine (but not user) config
-    local machine_config = M.config.settings[machine_name]
-    if machine_config then
-      final_config = vim.tbl_deep_extend("force", final_config, M.config.settings[machine_name])
-    end
-
-    -- Extend and overwrite the machine config with the user@machine config
-    local user_machine_config = M.config.settings[user .. "@" .. machine_name]
-    if user_machine_config then
-      final_config = vim.tbl_deep_extend("force", final_config, user_machine_config)
-    end
-
-    return final_config
-  end
-  M.settings = make_settings()
+  M.settings = make_settings(M.config)
 
   if M.config.global then
     _G[M.config.global] = M.settings
