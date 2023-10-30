@@ -33,9 +33,10 @@ M.get_machine_id = function()
   if string.find(operating_system, "linux") then
     id_cmd = [[cat /etc/machine-id | shasum -a 1 | cut -f 1 -d  " "]]
   elseif string.find(operating_system, "darwin") then
-    -- TODO: We need a better way to do this on macOS
     id_cmd =
-      [[dscl /Search -read "/Users/$USER" GeneratedUID | cut -d ' ' -f2 | shasum -a 1 | cut -f 1 -d " "]]
+      -- [[dscl /Search -read "/Users/$USER" GeneratedUID | cut -d ' ' -f2 | shasum -a 1 | cut -f 1 -d " "]]
+    -- https://apple.stackexchange.com/questions/342042/how-can-i-query-the-hardware-uuid-of-a-mac-programmatically-from-a-command-line
+      [[ioreg -d2 -c IOPlatformExpertDevice | awk -F\" '/IOPlatformUUID/{print $(NF-1)}' | shasum -a 1 | cut -f 1 -d  " "]]
   else
     vim.notify("[Machinegun] The retrieved OS " .. operating_system .. " could not be identified")
     return false
