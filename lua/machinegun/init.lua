@@ -37,11 +37,6 @@ M.get_machine_name = function()
   return false
 end
 
--- local split_machine_and_user = function(config)
---   local user, machine = string.match(config, "([^@]*)@?(.*)")
---   return { user = user == "" and nil or user, machine = machine }
--- end
-
 local make_settings = function(config)
   local machine_name = M.get_machine_name()
   local user = M.get_user()
@@ -67,17 +62,27 @@ local make_settings = function(config)
   return final_config
 end
 
+local validate_config = function(config)
+  vim.validate({
+    global = { config.global, "string", true },
+    default = { config.default, "string", true },
+    machines = { config.machines, "table" },
+    settings = { config.settings, "table" },
+  })
+
+  for config_name, _ in pairs(config.settings) do
+    local machine = utils.split_machine_and_user(config_name).machine
+    if not utils.has_key(config.machines, machine) then
+      vim.notify("[Machinegun] No matching id found for settings." .. machine, "WARN")
+    end
+  end
+end
+
 M.setup = function(config)
   vim.validate({ config = { config, "table", true } })
   M.config = vim.tbl_deep_extend("force", M.config, config or {})
 
-  vim.validate({
-    global = { M.config.global, "string", true },
-    default = { M.config.default, "string", true },
-    machines = { M.config.machines, "table" },
-    settings = { M.config.settings, "table" },
-  })
-
+  validate_config(M.config)
   M.settings = make_settings(M.config)
 
   if M.config.global then

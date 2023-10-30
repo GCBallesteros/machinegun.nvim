@@ -13,7 +13,7 @@ end
 M.get_machine_id = function()
   local operating_system = get_os()
   if not operating_system then
-    vim.notify "[Machinegun] Could not retrieve current OS"
+    vim.notify("[Machinegun] Could not retrieve current OS", "ERROR")
     return false
   end
 
@@ -28,7 +28,7 @@ M.get_machine_id = function()
       -- https://apple.stackexchange.com/questions/342042/how-can-i-query-the-hardware-uuid-of-a-mac-programmatically-from-a-command-line
       [[ioreg -d2 -c IOPlatformExpertDevice | awk -F\" '/IOPlatformUUID/{print $(NF-1)}' | shasum -a 1 | cut -f 1 -d  " "]]
   else
-    vim.notify("[Machinegun] The retrieved OS " .. operating_system .. " could not be identified")
+    vim.notify("[Machinegun] The retrieved OS " .. operating_system .. " could not be identified", "ERROR")
     return false
   end
 
