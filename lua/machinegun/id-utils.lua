@@ -1,18 +1,8 @@
 local M = {}
-
-local run_terminal_cmd = function(command, error_message)
-  local f = io.popen(command)
-  if not f then
-    vim.notify("[Machinegun] " .. error_message)
-    return false
-  end
-  local out = f:read "*a" or ""
-  f:close()
-  return out
-end
+local utils = require "machinegun.utils"
 
 local get_os = function()
-  local operating_system = run_terminal_cmd("uname -s", "Problem running `uname`")
+  local operating_system = utils.run_terminal_cmd("uname -s", "Problem running `uname`")
   if operating_system then
     return string.lower(string.gsub(operating_system, "\n$", ""))
   else
@@ -35,14 +25,14 @@ M.get_machine_id = function()
   elseif string.find(operating_system, "darwin") then
     id_cmd =
       -- [[dscl /Search -read "/Users/$USER" GeneratedUID | cut -d ' ' -f2 | shasum -a 1 | cut -f 1 -d " "]]
-    -- https://apple.stackexchange.com/questions/342042/how-can-i-query-the-hardware-uuid-of-a-mac-programmatically-from-a-command-line
+      -- https://apple.stackexchange.com/questions/342042/how-can-i-query-the-hardware-uuid-of-a-mac-programmatically-from-a-command-line
       [[ioreg -d2 -c IOPlatformExpertDevice | awk -F\" '/IOPlatformUUID/{print $(NF-1)}' | shasum -a 1 | cut -f 1 -d  " "]]
   else
     vim.notify("[Machinegun] The retrieved OS " .. operating_system .. " could not be identified")
     return false
   end
 
-  local machine_id = run_terminal_cmd(id_cmd, "Problem retriving machine-id")
+  local machine_id = utils.run_terminal_cmd(id_cmd, "Problem retriving machine-id")
   if machine_id then
     return string.gsub(machine_id, "\n$", "")
   else

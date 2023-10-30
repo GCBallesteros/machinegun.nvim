@@ -1,5 +1,6 @@
 local M = {}
 local id_utils = require "machinegun.id-utils"
+local utils = require "machinegun.utils"
 
 M.config = {
   global = nil,
@@ -10,19 +11,8 @@ M.config = {
 
 -- TODO: validate that the settings keys are in machines
 
-local run_terminal_cmd = function(command, error_message)
-  local f = io.popen(command)
-  if not f then
-    vim.notify("[Machinegun] " .. error_message)
-    return false
-  end
-  local out = f:read "*a" or ""
-  f:close()
-  return out
-end
-
 M.get_user = function()
-  local user = run_terminal_cmd("id -un", "Problem retrieving user name")
+  local user = utils.run_terminal_cmd("id -un", "Problem retrieving user name")
   if user then
     return string.gsub(user, "\n$", "")
   else
