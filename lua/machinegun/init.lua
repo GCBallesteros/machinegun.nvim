@@ -8,7 +8,7 @@ M.config = {
   settings = {},
 }
 
--- TODO: user overlays and default overlay
+-- TODO: validate that the settings keys are in machines
 
 local run_terminal_cmd = function(command, error_message)
   local f = io.popen(command)
@@ -21,7 +21,7 @@ local run_terminal_cmd = function(command, error_message)
   return out
 end
 
-local get_user = function()
+M.get_user = function()
   local user = run_terminal_cmd("id -un", "Problem retrieving user name")
   if user then
     return string.gsub(user, "\n$", "")
@@ -47,18 +47,38 @@ M.get_machine_name = function()
   return false
 end
 
+-- local split_machine_and_user = function(config)
+--   local user, machine = string.match(config, "([^@]*)@?(.*)")
+--   return { user = user == "" and nil or user, machine = machine }
+-- end
+
 M.setup = function(config)
   vim.validate({ config = { config, "table", true } })
   M.config = vim.tbl_deep_extend("force", M.config, config or {})
 
   local make_settings = function()
     local machine_name = M.get_machine_name()
-    if machine_name then
-      return M.config.settings[machine_name]
-    else
-      vim.notify("[Machinegun] Retrieving the default config: " .. M.default)
-      return M.config.settings[M.default]
+    local user = M.get_user()
+
+    -- Get the default config if there is one otherwise just assume it is empty
+    local final_config = M.config.settings[M.default]
+    if not final_config then
+      final_config = {}
     end
+
+    -- Extend and overwrite the default with the machine (but not user) config
+    local machine_config = M.config.settings[machine_name]
+    if machine_config then
+      final_config = vim.tbl_deep_extend("force", final_config, M.config.settings[machine_name])
+    end
+
+    -- Extend and overwrite the machine config with the user@machine config
+    local user_machine_config = M.config.settings[user .. "@" .. machine_name]
+    if user_machine_config then
+      final_config = vim.tbl_deep_extend("force", final_config, user_machine_config)
+    end
+
+    return final_config
   end
   M.settings = make_settings()
 
