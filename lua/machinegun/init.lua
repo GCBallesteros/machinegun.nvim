@@ -80,6 +80,14 @@ end
 M.setup = function(config)
   vim.validate({ config = { config, "table", true } })
   M.config = vim.tbl_deep_extend("force", M.config, config or {})
+
+  vim.validate({
+    global = { M.config.global, "string", true },
+    default = { M.config.default, "string", true },
+    machines = { M.config.machines, "table" },
+    settings = { M.config.settings, "table" },
+  })
+
   M.settings = make_settings(M.config)
 
   if M.config.global then
