@@ -1,4 +1,27 @@
+--- *Machinegun.doc* asdfasdf
+--- *Machinegun*
+---
+--- MIT License Copyright (c) 2023 Guillem Ballesteros
+---
+--- ==============================================================================
+---
+--- A plugin to help you customize your setup across different machines and
+--- users with a single configuration. Machinegun.nvim makes it really easy to,
+--- for example, have different color schemes on your laptop and remote
+--- computers or when being root.
+---
+--- # Setting up~
+--- Full instruction available on the README. The overall steps that need to be
+--- followed are:
+--- 1. Find the machine ID
+--- 2. Add it to the `machine` section of the plugin configuration
+--- 3. Add some machine specific configuration in the settings table. Under a
+---   table that is keyed with the name of the machine.
+--- 4. Use the machine specific settings on your own configuration by accessing
+---  them with `require("machinegun").settings` or the optional global variable.
+
 local M = {}
+
 local id_utils = require "machinegun.id-utils"
 local utils = require "machinegun.utils"
 
@@ -9,22 +32,26 @@ M.config = {
   settings = {},
 }
 
-M.get_user = function()
-  local user = utils.run_terminal_cmd("id -un", "Problem retrieving user name")
-  if user then
-    return string.gsub(user, "\n$", "")
-  else
-    return false
-  end
-end
-
-M.get_machine_name = function()
+--- Returns the name in the config associated with this machine
+---
+---@param machines table A table of pairs `machine_name = machine_id`.
+---  To retrieve the `machine_id` you will have to run the `get_machine_id` function
+---  or run one of the following commands depending on the OS you are running: -    - Mac:
+---    - Mac: `ioreg -d2 -c IOPlatformExpertDevice | awk -F\" '/IOPlatformUUID/{print $(NF-1)}' | shasum -a 1 | cut -f 1 -d  " "`
+---    - Linux: `cat /etc/machine-id | shasum -a 1 | cut -f 1 -d  " "`
+---
+---  The machines table doesn't need to include the whole hash. It will do a prefix
+---  match so you can just put in there the first few characters of the hash. Seven or
+---  eight are for most scenarios enough to avoid collisions and not make the task to
+---  onerous.
+---@return string|boolean
+M.get_machine_name = function(machines)
   local machine_id = id_utils.get_machine_id()
   if not machine_id then
     return false
   end
 
-  for machine_name, mid in pairs(M.config.machines) do
+  for machine_name, mid in pairs(machines) do
     local check_id = vim.fn.match(machine_id, "^" .. mid) == 0
     if check_id then
       return machine_name
@@ -36,8 +63,8 @@ M.get_machine_name = function()
 end
 
 local make_settings = function(config)
-  local machine_name = M.get_machine_name()
-  local user = M.get_user()
+  local machine_name = M.get_machine_name(config.machines)
+  local user = id_utils.get_user()
 
   -- Get the default config if there is one otherwise just assume it is empty
   local final_config = config.settings[config.default]
@@ -76,6 +103,12 @@ local validate_config = function(config)
   end
 end
 
+--- Module setup
+---
+---@param config table|nil Module config table. See |machinegun.setting up|
+---
+---@usage `require('machinegun').setup(opts)` To understand how to set up your opts
+---  please have a look at the setting up section of the README
 M.setup = function(config)
   vim.validate({ config = { config, "table", true } })
   M.config = vim.tbl_deep_extend("force", M.config, config or {})
@@ -87,5 +120,9 @@ M.setup = function(config)
     _G[M.config.global] = M.settings
   end
 end
+
+-- Export other functions
+M.get_machine_id = id_utils.get_machine_id
+M.get_user = id_utils.get_user
 
 return M

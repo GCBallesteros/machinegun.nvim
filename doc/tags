@@ -1,0 +1,6 @@
+M.get_machine_id()	machinegun.txt	/*M.get_machine_id()*
+M.get_machine_name()	machinegun.txt	/*M.get_machine_name()*
+M.get_user()	machinegun.txt	/*M.get_user()*
+M.setup()	machinegun.txt	/*M.setup()*
+Machinegun	machinegun.txt	/*Machinegun*
+Machinegun.doc	machinegun.txt	/*Machinegun.doc*

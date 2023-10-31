@@ -1,0 +1,75 @@
+==============================================================================
+------------------------------------------------------------------------------
+*Machinegun.doc* asdfasdf
+*Machinegun*
+
+MIT License Copyright (c) 2023 Guillem Ballesteros
+
+==============================================================================
+
+A plugin to help you customize your setup across different machines and
+users with a single configuration. Machinegun.nvim makes it really easy to,
+for example, have different color schemes on your laptop and remote
+computers or when being root.
+
+# Setting up~
+Full instruction available on the README. The overall steps that need to be
+followed are:
+1. Find the machine ID
+2. Add it to the `machine` section of the plugin configuration
+3. Add some machine specific configuration in the settings table. Under a
+  table that is keyed with the name of the machine.
+4. Use the machine specific settings on your own configuration by accessing
+ them with `require("machinegun").settings` or the optional global variable.
+
+------------------------------------------------------------------------------
+                                                          *M.get_machine_name()*
+                        `M.get_machine_name`({machines})
+Returns the name in the config associated with this machine
+
+Parameters~
+{machines} `(table)` A table of pairs `machine_name = machine_id`.
+ To retrieve the `machine_id` you will have to run the `get_machine_id` function
+ or run one of the following commands depending on the OS you are running: -    - Mac:
+   - Mac: `ioreg -d2 -c IOPlatformExpertDevice | awk -F\" '/IOPlatformUUID/{print $(NF-1)}' | shasum -a 1 | cut -f 1 -d  " "`
+   - Linux: `cat /etc/machine-id | shasum -a 1 | cut -f 1 -d  " "`
+
+ The machines table doesn't need to include the whole hash. It will do a prefix
+ match so you can just put in there the first few characters of the hash. Seven or
+ eight are for most scenarios enough to avoid collisions and not make the task to
+ onerous.
+Return~
+`(string|boolean)`
+
+------------------------------------------------------------------------------
+                                                                     *M.setup()*
+                              `M.setup`({config})
+Module setup
+
+Parameters~
+{config} `(table|nil)` Module config table. See |machinegun.setting up|
+
+Usage~
+`require('machinegun').setup(opts)` To understand how to set up your opts
+ please have a look at the setting up section of the README
+
+
+==============================================================================
+------------------------------------------------------------------------------
+                                                            *M.get_machine_id()*
+                              `M.get_machine_id`()
+Returns an SHA1 hash of machine UUID.
+
+Return~
+`(string\|boolean)` UUID for the machine. If false the retrieval failed
+
+------------------------------------------------------------------------------
+                                                                  *M.get_user()*
+                                 `M.get_user`()
+Returns the user that started neovim
+
+Return~
+`(string|boolean)` User
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
