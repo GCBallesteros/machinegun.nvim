@@ -24,6 +24,7 @@ have to repeat yourself with shared settings.
   - [Storing the machine ID](#storing-the-machine-id)
   - [Settings definitions](#defining-some-settings)
   - [Actually using the settings](#actually-using-the-settings)
+- [Going global](#going-global)
 
 
 
