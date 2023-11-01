@@ -21,6 +21,8 @@ have to repeat yourself with shared settings.
 - [Installation](#installation)
 - [Setting Up](#setting-up)
   - [Finding the machine ID](#finding-the-machine-id)
+      - [🐧 Linux](#-linux-)
+      - [🍎 Mac](#-mac-)
   - [Storing the machine ID](#storing-the-machine-id)
   - [Settings definitions](#defining-some-settings)
   - [Actually using the settings](#actually-using-the-settings)
