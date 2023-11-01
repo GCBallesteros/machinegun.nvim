@@ -21,6 +21,7 @@ have to repeat yourself with shared settings.
 - [Installation](#installation)
 - [Setting Up](#setting-up)
 
+
 ## Installation
 Installation with `lazy.nvim` just requires you to add an extra specification such
 as:
