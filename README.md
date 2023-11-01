@@ -25,6 +25,7 @@ have to repeat yourself with shared settings.
   - [Settings definitions](#defining-some-settings)
   - [Actually using the settings](#actually-using-the-settings)
 - [Going global](#-going-global-)
+- [Living live on the fast line](#%EF%B8%8F-living-live-on-the-fast-line-%EF%B8%8F)
 
 
 
