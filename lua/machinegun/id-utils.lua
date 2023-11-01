@@ -39,7 +39,6 @@ M.get_user = function()
   end
 end
 
-
 --- Returns the name in the config associated with this machine
 ---
 ---@param machines table A table of pairs `machine_name = machine_id`.

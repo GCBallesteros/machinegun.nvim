@@ -1,4 +1,4 @@
---- *Machinegun.doc* asdfasdf
+--- *Machinegun.doc*
 --- *Machinegun*
 ---
 --- MIT License Copyright (c) 2023 Guillem Ballesteros
